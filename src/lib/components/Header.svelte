@@ -1,9 +1,14 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import Navigation from './Navigation.svelte';
 </script>
 
 <div class="content">
-	<div class="left"><Navigation desktop={false} /></div>
+	<div class="left">
+		{#if browser}
+			<Navigation desktop={false} />
+		{/if}
+	</div>
 	<div class="right">right</div>
 </div>
 
