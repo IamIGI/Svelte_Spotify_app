@@ -1,5 +1,6 @@
 <script>
 	import { invalidateAll } from '$app/navigation';
+	import Button from './Button.svelte';
 </script>
 
 <form
@@ -16,5 +17,5 @@
 		}
 	}}
 >
-	<button type="submit">Logout</button>
+	<Button element="button" type="submit">Logout</Button>
 </form>
