@@ -1,18 +1,24 @@
 <script lang="ts">
+	import { applyAction, enhance } from '$app/forms';
 	import { page } from '$app/stores';
 	import Button from '$components/Button.svelte';
 	import ItemPage from '$components/ItemPage.svelte';
 	import TrackList from '$components/TrackList.svelte';
-	import type { PageData } from './$types';
+	import { Heart } from 'lucide-svelte';
+	import type { ActionData, PageData } from './$types';
 
 	export let data: PageData;
+	export let form: ActionData;
 
 	let isLoading = false;
+	let isLoadingFollow = false;
+	let followButton: Button<'button'>;
 
 	$: color = data.color;
 	$: playlist = data.playlist;
 	$: tracks = data.playlist.tracks;
 	$: offset = data.offset;
+	$: isFollowing = data.isFollowing;
 	$: currentPage = $page.url.searchParams.get('page') || 1;
 
 	let filteredTracks: SpotifyApi.TrackObjectFull[];
@@ -43,6 +49,7 @@
 	};
 </script>
 
+{isFollowing}
 <ItemPage
 	title={playlist.name}
 	image={playlist.images.length > 0 ? playlist.images[0].url : undefined}
@@ -58,6 +65,54 @@
 			<span>{followersFormat.format(playlist.followers.total)}</span>
 			<span>{playlist.tracks.total} Tracks</span>
 		</p>
+	</div>
+
+	<div class="playlist-actions">
+		{#if data.user?.id === playlist.owner.id}
+			<Button element="a" variant="outline">Edit Playlist</Button>
+		{:else if isFollowing !== null}
+			<form
+				class="follow-form"
+				method="POST"
+				action={`?/${isFollowing ? 'unFollowPlaylist' : 'followPlaylist'}`}
+				use:enhance={() => {
+					// enhance allow to send request without refreshing the page
+					isLoadingFollow = true;
+					// pass the 'update', to get know formActions, that logic of your custom behavior
+					// finished. In effect all of the fetches for given page will be executed once again
+					// return ({ update }) => {
+					// 	isLoadingFollow = false;
+					// 	update();
+					// };
+
+					// applyAction will apply the result of given request and update necessary variables
+					return async ({ result }) => {
+						isLoadingFollow = false;
+						await applyAction(result);
+						followButton.focus();
+						if (result.type === 'success') {
+							isFollowing = !isFollowing;
+						}
+					};
+				}}
+			>
+				<Button
+					bind:this={followButton}
+					element="button"
+					type="submit"
+					variant="outline"
+					disabled={isLoadingFollow}
+				>
+					<Heart aria-hidden focusable="false" fill={isFollowing ? 'var(--text-color)' : 'none'} />
+					{isFollowing ? 'Unfollow' : 'Follow'}
+					<span class="visually-hidden">{playlist.name} playlist</span>
+				</Button>
+
+				{#if form?.followError}
+					<p class="error">{form.followError}</p>
+				{/if}
+			</form>
+		{/if}
 	</div>
 
 	{#if playlist.tracks.items.length > 0}
@@ -148,6 +203,29 @@
 		align-items: center;
 		:global(html.no-js) & {
 			display: flex;
+		}
+	}
+
+	.playlist-actions {
+		display: flex;
+		justify-content: flex-end;
+		margin: 10px 0 30px;
+		.follow-form {
+			/* button is comming from other component, this is the way to get access to it */
+			:global(.button) {
+				display: flex;
+				align-items: center;
+				:global(svg) {
+					margin-right: 10px;
+					width: 22px;
+					height: 22px;
+				}
+			}
+			p.error {
+				text-align: right;
+				color: var(--error);
+				font-size: functions.toRem(14);
+			}
 		}
 	}
 </style>
