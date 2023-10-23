@@ -6,6 +6,7 @@
 	import TrackList from '$components/TrackList.svelte';
 	import { Heart } from 'lucide-svelte';
 	import type { ActionData, PageData } from './$types';
+	import { toasts } from '$stores';
 
 	export let data: PageData;
 	export let form: ActionData;
@@ -42,7 +43,7 @@
 		if (res.ok) {
 			tracks = { ...resJSON, items: [...tracks.items, ...resJSON.items] };
 		} else {
-			alert(resJSON.error.message || 'Could not load data!');
+			toasts.error(resJSON.error.message || 'Could not load data!');
 		}
 
 		isLoading = false;
@@ -88,11 +89,16 @@
 					// applyAction will apply the result of given request and update necessary variables
 					return async ({ result }) => {
 						isLoadingFollow = false;
-						await applyAction(result);
-						followButton.focus();
+
 						if (result.type === 'success') {
+							await applyAction(result);
 							isFollowing = !isFollowing;
+						} else if (result.type === 'failure') {
+							toasts.error('Could not save!');
+						} else {
+							await applyAction(result);
 						}
+						followButton.focus();
 					};
 				}}
 			>
