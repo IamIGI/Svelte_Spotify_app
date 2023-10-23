@@ -4,7 +4,7 @@
 	import { Button, LogoutButton } from '$components';
 
 	let isRetrying = false;
-	const retryRoutes = ['/albums/[id]'];
+	const retryRoutes = ['/albums/[id]', '/playlist/[id]'];
 </script>
 
 <svelte:head>
