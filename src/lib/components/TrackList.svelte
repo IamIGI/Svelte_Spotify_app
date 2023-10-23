@@ -8,6 +8,7 @@
 	let isPaused: boolean = false;
 
 	export let tracks: SpotifyApi.TrackObjectFull[] | SpotifyApi.TrackObjectSimplified[];
+	export let offset: number = 0;
 </script>
 
 <div class="tracks">
@@ -30,7 +31,7 @@
 				{#if currentlyPlaying === track.id && !isPaused}
 					<img class="playing-gif" src={playingGif} alt="" />
 				{:else}
-					<span class="number">{index + 1}</span>
+					<span class="number">{index + offset + 1}</span>
 				{/if}
 				<div class="player">
 					<Player
