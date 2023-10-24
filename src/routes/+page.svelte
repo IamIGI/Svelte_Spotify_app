@@ -43,7 +43,6 @@
 				items: data.userPlaylists.items
 			});
 		}
-		console.log(sections);
 	}
 </script>
 
