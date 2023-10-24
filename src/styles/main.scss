@@ -36,6 +36,15 @@ body {
 	color: var(--text-color);
 }
 
+input {
+	border: none;
+	padding: 0 20px;
+	height: 35px;
+	border-radius: 20px;
+	font-size: functions.toRem(14);
+	color: var(--medium-gray);
+}
+
 h1,
 h2,
 h3,
@@ -119,11 +128,9 @@ a {
 	display: grid;
 	grid-template-columns: 1fr;
 	gap: 20px;
-
 	.card {
 		height: 100%;
 	}
-
 	@include breakpoint.up('sm') {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
@@ -135,7 +142,6 @@ a {
 	}
 }
 
-// truncate text based on number of lines
 @for $i from 1 through 3 {
 	.truncate-#{$i} {
 		display: -webkit-box;
