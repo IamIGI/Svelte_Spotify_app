@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import Navigation from './Navigation.svelte';
+	import { Navigation, LogoutButton } from '$components';
 	import { page } from '$app/stores';
 	import { ChevronDown, ExternalLink } from 'lucide-svelte';
 	import { tippy } from '$actions';
-	import LogoutButton from './LogoutButton.svelte';
+
+	export let userAllPlaylists: SpotifyApi.PlaylistObjectSimplified[] | undefined;
 
 	$: user = $page.data.user;
 </script>
@@ -12,7 +13,7 @@
 <div class="content">
 	<div class="left">
 		{#if browser}
-			<Navigation desktop={false} />
+			<Navigation desktop={false} {userAllPlaylists} />
 		{/if}
 	</div>
 	<div class="right">
@@ -64,7 +65,7 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		width: 100%;
+		width: 95%;
 		:global(html.no-js) & {
 			@include breakpoint.down('md') {
 				justify-content: flex-start;
