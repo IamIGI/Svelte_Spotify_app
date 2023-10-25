@@ -29,6 +29,10 @@ body {
 	font-family: 'Metropolis', sans-serif;
 	background-color: var(--bg-color);
 	color: var(--text-color);
+
+	// &::-webkit-scrollbar {
+	// 	display: none;
+	// }
 }
 
 ::selection {
