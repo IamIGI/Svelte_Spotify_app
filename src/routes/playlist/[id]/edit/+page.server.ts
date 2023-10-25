@@ -31,7 +31,8 @@ export const actions: Actions = {
 				name,
 				description,
 				apiError: errorJSON?.error?.message ?? 'An error has occurred',
-				nameError: false
+				nameError: false,
+				editForm: true
 			});
 		} else {
 			if (url.searchParams.has('redirect')) throw redirect(303, `/playlist/${params.id}`);
