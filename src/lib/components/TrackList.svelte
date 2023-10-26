@@ -9,10 +9,12 @@
 	import { enhance } from '$app/forms';
 	import { toasts } from '$stores';
 	import { hideAll } from 'tippy.js';
+	import { invalidate } from '$app/navigation';
 
 	let currentlyPlaying: string | null = null;
 	let isPaused: boolean = false;
 	let isAddingToPlaylist: string[] = [];
+	let isRemovingFromPlaylist: string[] = [];
 
 	export let tracks: SpotifyApi.TrackObjectFull[] | SpotifyApi.TrackObjectSimplified[];
 	export let offset: number = 0;
@@ -75,7 +77,47 @@
 			</div>
 			<div class="actions-column" class:is-owner={isOwner}>
 				{#if isOwner}
-					<ListX aria-hidden focusable="false" />
+					<form
+						method="POST"
+						action="/playlist/{$page.params.id}?/removeItem"
+						class="remove-pl-button"
+						use:enhance={({ cancel }) => {
+							if (isRemovingFromPlaylist.includes(track.id)) {
+								cancel();
+							}
+							isRemovingFromPlaylist = [...isRemovingFromPlaylist, track.id];
+							return ({ result }) => {
+								isRemovingFromPlaylist = isRemovingFromPlaylist.filter((t) => t !== track.id);
+								if (result.type === 'error') {
+									toasts.error(result.error.message);
+								}
+								if (result.type === 'redirect') {
+									const url = new URL(`${$page.url.origin}${result.location}`);
+									const error = url.searchParams.get('error');
+									const success = url.searchParams.get('success');
+									if (error) {
+										toasts.error(error);
+									}
+									if (success) {
+										toasts.success(success);
+										invalidate(`/api/spotify/playlists/${$page.params.id}`);
+									}
+								}
+								isAddingToPlaylist.filter((t) => t !== track.id);
+							};
+						}}
+					>
+						<input hidden name="track" value={track.id} />
+						<button
+							type="submit"
+							title="Remove {track.name} from playlist"
+							aria-label="Remove {track.name} from playlist"
+							class="remove-pl-button"
+							disabled={isRemovingFromPlaylist.includes(track.id)}
+						>
+							<ListX aria-hidden focusable="false" />
+						</button>
+					</form>
 				{:else}
 					<button
 						title="Add {track.name} to a playlist"
@@ -305,7 +347,8 @@
 		.actions-column {
 			width: 30px;
 			margin-left: 15px;
-			.add-pl-button {
+			.add-pl-button,
+			.remove-pl-button {
 				background: none;
 				border: none;
 				padding: 5px;
