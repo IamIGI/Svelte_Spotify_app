@@ -11,7 +11,6 @@
 	$: artistTopTracks = data.artistTopTracks;
 	$: color = data.color;
 	$: sections = data.artistSections;
-	$: console.log(data);
 
 	const followersFormat = Intl.NumberFormat('en', { notation: 'compact' });
 </script>
