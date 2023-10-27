@@ -68,15 +68,15 @@ export const load: PageLoad = async ({ fetch, params, parent, depends, route }) 
 		artistTopTracks: artistTopTracksJSON,
 		color,
 		artistSections: [
-			{ title: 'Albums', path: `/artists/${params.id}/albums`, items: artistAlbumsJSON.items },
+			{ title: 'Albums', path: `/artist/${params.id}/albums`, items: artistAlbumsJSON.items },
 			{
 				title: 'Appears on',
-				path: `/artists/${params.id}/albums&include_groups=appears_on`,
+				path: `/artist/${params.id}/appears-on`,
 				items: artistAppearsOnJSON.items
 			},
 			{
 				title: 'Related artists',
-				path: `/artists/${params.id}/related-artists`,
+				path: `/artist/${params.id}/related-artists`,
 				items: relatedArtistsJSON.artists.slice(0, 6)
 			}
 		]
